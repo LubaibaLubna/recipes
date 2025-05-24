@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
 const Navbar = () => {
     const { user, logOut } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [isDark, setIsDark] = useState(false);
 
     const handleSignOut = () => {
         logOut()
             .then(() => {
                 alert("You logged out successfully");
-                navigate("/"); 
+                navigate("/");
             })
             .catch(() => {
                 alert("Error logging out. Please try again.");
@@ -19,6 +20,10 @@ const Navbar = () => {
 
     const navLinkStyle = ({ isActive }) =>
         isActive ? "text-green-600 font-semibold " : "text-gray-600";
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    }, [isDark]);
 
     return (
         <div className="navbar bg-base-100 shadow-sm px-10">
@@ -40,11 +45,7 @@ const Navbar = () => {
                     </ul>
                 </div>
                 <div className="flex items-center">
-                    <img
-                        className="w-[100px] h-[55px]"
-                        src="https://i.ibb.co/6RrnW85J/Green-Simple-Nature-Beauty-Care-Initials-Logo.png"
-                        alt="Logo"
-                    />
+                
                     <span className="font-bold text-3xl ml-2 text-green-700">Recipe book</span>
                 </div>
             </div>
@@ -56,11 +57,18 @@ const Navbar = () => {
                     <li><NavLink to="/addRecipe" className={navLinkStyle}>Add Recipe</NavLink></li>
                     <li><NavLink to="/myRecipes" className={navLinkStyle}>My Recipes</NavLink></li>
                     <li><NavLink to="/contactUs" className={navLinkStyle}>Contact Us</NavLink></li>
-
                 </ul>
             </div>
 
-            <div className="navbar-end gap-5">
+            <div className="navbar-end gap-5 items-center">
+                {/* 🌗 Theme Toggle */}
+                <input
+                    type="checkbox"
+                    className="toggle toggle-secondary"
+                    checked={isDark}
+                    onChange={() => setIsDark(!isDark)}
+                />
+
                 {!user ? (
                     <>
                         <NavLink to="/auth/register" className="btn bg-green-800 rounded-2xl text-white px-7">
@@ -91,7 +99,6 @@ const Navbar = () => {
                             <li>
                                 <span className="text-xs text-gray-500">{user.email}</span>
                             </li>
-                        
                             <li>
                                 <button onClick={handleSignOut} className="text-green-800 mt-2">
                                     Log Out

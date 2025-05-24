@@ -25,7 +25,7 @@ const handleUpdateRecipe = async (e) => {
   updatedRecipe.categories = formdata.getAll("categories");
 
   try {
-    const response = await fetch(`https://recipe-book-server-xi.vercel.app/recipes/${_id}`, {
+    const response = await fetch(`http://localhost:5000/recipes/${_id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedRecipe),
@@ -34,7 +34,7 @@ const handleUpdateRecipe = async (e) => {
     const data = await response.json();
     console.log("Update response:", data);
 
-    if (data && data._id) {
+    if (response.ok && data) {
       await Swal.fire({
         position: "top-end",
         icon: "success",
