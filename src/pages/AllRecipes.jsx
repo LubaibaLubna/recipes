@@ -1,17 +1,19 @@
-
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Fade } from 'react-awesome-reveal'; 
 
-const AllRecipes = ({_id}) => {
+const AllRecipes = () => {
     const [recipes, setRecipes] = useState([]);
+    const [filteredRecipes, setFilteredRecipes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCuisine, setSelectedCuisine] = useState("All");
 
     useEffect(() => {
-        fetch('http://localhost:5000/recipes')
+        fetch('https://recipe-book-server-xi.vercel.app/recipes')
             .then(res => res.json())
             .then(data => {
                 setRecipes(data);
+                setFilteredRecipes(data);
                 setLoading(false);
             })
             .catch(err => {
@@ -20,41 +22,68 @@ const AllRecipes = ({_id}) => {
             });
     }, []);
 
+    const handleCuisineChange = (e) => {
+        const cuisine = e.target.value;
+        setSelectedCuisine(cuisine);
+        if (cuisine === "All") {
+            setFilteredRecipes(recipes);
+        } else {
+            setFilteredRecipes(recipes.filter(recipe => recipe.cuisineType === cuisine));
+        }
+    };
+
+    const cuisineTypes = ["All", ...new Set(recipes.map(recipe => recipe.cuisineType))];
+
     if (loading) {
         return <div className="text-center py-10">Loading recipes...</div>;
     }
 
-    if (!recipes.length) {
-        return <div className="text-center py-10">No recipes found.</div>;
+    if (!filteredRecipes.length) {
+        return <div className="text-center py-10">No recipes found for selected cuisine.</div>;
     }
 
     return (
-        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {recipes.map(recipe => (
-                <div
-                    key={recipe._id}
-                    className="card bg-base-100 shadow-lg border rounded-md overflow-hidden flex flex-col"
+        <div className="p-6">
+            <div className="mb-6 flex justify-center">
+                <label className="block mt-1 mr-4 font-medium text-lg">Cuisine Type:</label>
+                <select
+                    value={selectedCuisine}
+                    onChange={handleCuisineChange}
+                    className="select select-bordered w-full max-w-xs"
                 >
-                    <img
-                        src={recipe.photo}
-                        alt={recipe.name}
-                        className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4 flex-grow">
-                        <h2 className="text-xl font-semibold mb-2">{recipe.name}</h2>
+                    {cuisineTypes.map((type, idx) => (
+                        <option key={idx} value={type}>
+                            {type}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-                        <p className="text-sm mb-3 line-clamp-3">{recipe.instructions}</p>
-                    </div>
-                    <div className="p-4 border-t text-center">
-                        <Link to={`/recipes/${recipe._id}`}>  <button
-                        
-                            className="btn btn-primary w-full"
-                        >
-                            See Details
-                        </button></Link>
-                    </div>
-                </div>
-            ))}
+        
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {filteredRecipes.map((recipe, index) => (
+                    <Fade key={recipe._id} triggerOnce delay={index * 50}>
+                        <div className="card bg-base-100 shadow-lg border rounded-md overflow-hidden flex flex-col">
+                            <img
+                                src={recipe.photo}
+                                alt={recipe.name}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4 flex-grow">
+                                <h2 className="text-xl font-semibold mb-2">{recipe.name}</h2>
+                                <p className="text-sm mb-3 line-clamp-3">{recipe.instructions}</p>
+                            </div>
+                            <div className="p-4 text-center">
+                                <Link to={`/recipes/${recipe._id}`}>
+                                    <button className="btn bg-green-800 text-white w-full">
+                                        See Details
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </Fade>
+                ))}
+            </div>
         </div>
     );
 };

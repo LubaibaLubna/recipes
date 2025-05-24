@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Link } from 'react-router';
 import Swal from 'sweetalert2';
@@ -36,7 +34,7 @@ const RecipeCard = ({ recipe }) => {
 
             if (result.isConfirmed) {
 
-                fetch(`http://localhost:5000/recipes/${_id}`, {
+                fetch(`https://recipe-book-server-xi.vercel.app/recipes/${_id}`, {
                     method: 'DELETE'
                 })
                     .then(res => res.json())
@@ -75,7 +73,7 @@ const RecipeCard = ({ recipe }) => {
                 <p><strong>Likes:</strong> {likeCount}</p>
 
                 <div className="flex justify-end gap-2 mt-4">
-                    <Link to={`/update-recipe/${recipe._id}`} className="btn btn-sm">Update</Link>
+                    <Link to={`/update-recipe/${recipe?._id}`} className="btn bg-green-800 text-white btn-sm">Update</Link>
                     <button onClick={() => handleDelete(_id)} className="btn btn-error btn-sm">Delete</button>
                 </div>
             </div>

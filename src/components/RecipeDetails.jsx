@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../provider/AuthProvider';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 const RecipeDetails = () => {
   const { id } = useParams();
@@ -15,38 +16,41 @@ const RecipeDetails = () => {
   useEffect(() => {
     if (!user) return;
 
-    fetch(`http://localhost:5000/recipes/${id}`)
-      .then(res => {
+    const fetchRecipe = async () => {
+      try {
+        const res = await fetch(`https://recipe-book-server-xi.vercel.app/recipes/${id}`);
         if (!res.ok) throw new Error('Recipe not found');
-        return res.json();
-      })
-      .then(data => {
+        const data = await res.json();
         setRecipe(data);
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         setError(err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRecipe();
   }, [id, user]);
 
-  const handleLike = () => {
-    if (likeLoading) return;
+  const handleLike = async () => {
+    if (!recipe || recipe.userEmail === user?.email) return;
 
-    setLikeLoading(true);
-    fetch(`http://localhost:5000/recipes/${id}/like`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to like');
-        return res.json();
-      })
-      .then(updatedRecipe => {
-        setRecipe(updatedRecipe);
-      })
-      .catch(err => alert(err.message))
-      .finally(() => setLikeLoading(false));
+    try {
+      setLikeLoading(true);
+      const res = await fetch(`https://recipe-book-server-xi.vercel.app/recipes/${id}/like`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) throw new Error('Failed to like');
+
+      const updatedRecipe = await res.json();
+      setRecipe(updatedRecipe);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLikeLoading(false);
+    }
   };
 
   if (loading) return <div className="text-center py-10">Loading recipe details...</div>;
@@ -55,11 +59,15 @@ const RecipeDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md my-10">
-      <button onClick={() => navigate(-1)} className="btn btn-secondary mb-6">
+      <button onClick={() => navigate(-1)} className="btn bg-green-800 text-white mb-6">
         &larr; Back
       </button>
 
       <h1 className="text-3xl font-bold mb-4">{recipe.name}</h1>
+
+      <p className="text-lg text-gray-600 mb-4">
+        {recipe.likeCount || 0} {recipe.likeCount === 1 ? 'person likes' : 'people like'} this recipe
+      </p>
 
       <img
         src={recipe.photo}
@@ -93,17 +101,29 @@ const RecipeDetails = () => {
         <p>{Array.isArray(recipe.categories) ? recipe.categories.join(', ') : recipe.categories}</p>
       </div>
 
-      <div className="mb-4">
-        <strong>Like Count:</strong> {recipe.likeCount || 0}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={handleLike}
+          disabled={likeLoading || recipe.userEmail === user?.email}
+          className="text-red-500 text-2xl hover:scale-110 transition-transform duration-200"
+          title={
+            recipe.userEmail === user?.email
+              ? "You can't like your own recipe"
+              : "Like this recipe"
+          }
+        >
+          {likeLoading ? (
+            <span className="loading loading-spinner text-red-500"></span>
+          ) : (
+            <>
+              {recipe.likeCount > 0 ? <FaHeart /> : <FaRegHeart />}
+            </>
+          )}
+        </button>
+        <span className="text-gray-600">
+          {recipe.likeCount || 0} Likes
+        </span>
       </div>
-
-      <button
-        onClick={handleLike}
-        disabled={likeLoading}
-        className="btn btn-primary"
-      >
-        {likeLoading ? 'Liking...' : 'Like'}
-      </button>
     </div>
   );
 };

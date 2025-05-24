@@ -3,7 +3,7 @@ import RecipeCard from './RecipeCard';
 import { AuthContext } from '../provider/AuthProvider';
 
 const MyRecipes = () => {
-  const { user } = useContext(AuthContext); // ✅ Ensure correct context
+  const { user } = useContext(AuthContext); 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ const MyRecipes = () => {
       if (!user?.email) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/recipes?email=${user.email}`);
+        const res = await fetch(`https://recipe-book-server-xi.vercel.app/recipes?email=${user.email}`);
         const data = await res.json();
         setRecipes(data);
       } catch (err) {
@@ -29,9 +29,8 @@ const MyRecipes = () => {
     setRecipes(prev => prev.filter(recipe => recipe._id !== id));
   };
 
-  const handleUpdate = (recipe) => {
-    console.log('Update this recipe:', recipe);
-    // openModal(recipe) or navigate(`/update-recipe/${recipe._id}`);
+  const handleUpdate = (id) => {
+    console.log('Update this recipe:', id);
   };
 
   if (loading) return <div className="text-center py-10">Loading your recipes...</div>;

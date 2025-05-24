@@ -1,10 +1,9 @@
-
 import React, { useContext } from 'react';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../provider/AuthProvider';
 
 const AddRecipe = () => {
-  const { user } = useContext(AuthContext); // ✅ Access logged-in user
+  const { user } = useContext(AuthContext); 
 
   const handleAddRecipe = e => {
     e.preventDefault();
@@ -12,7 +11,7 @@ const AddRecipe = () => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // ✅ Convert categories (checkboxes) to array
+   
     const categories = formData.getAll('categories');
 
     const newRecipe = {
@@ -21,11 +20,11 @@ const AddRecipe = () => {
       userEmail: user?.email,
       userName: user?.displayName,
       userPhoto: user?.photoURL,
-      likeCount: 0, // Optional: start like count at 0
+      likeCount: 0, 
     };
 
-    // ✅ Send to backend
-    fetch('http://localhost:5000/recipes', {
+    
+    fetch('https://recipe-book-server-xi.vercel.app/recipes', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -58,25 +57,25 @@ const AddRecipe = () => {
 
       <form onSubmit={handleAddRecipe}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Name */}
+        
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label">Name</label>
             <input name="name" type="text" className="input w-full" placeholder="Enter recipe name" required />
           </fieldset>
 
-          {/* Ingredients */}
+       
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label">Ingredients</label>
             <input name="ingredients" type="text" className="input w-full" placeholder="Enter ingredients" required />
           </fieldset>
 
-          {/* Instructions */}
+         
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label">Instructions</label>
             <input name="instructions" type="text" className="input w-full" placeholder="Enter instructions" required />
           </fieldset>
 
-          {/* Cuisine Type */}
+     
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label">Cuisine Type</label>
             <select name="cuisineType" className="select w-full" required>
@@ -89,13 +88,12 @@ const AddRecipe = () => {
             </select>
           </fieldset>
 
-          {/* Preparation Time */}
+       
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label">Preparation Time (minutes)</label>
             <input name="preparationTime" type="number" min="1" className="input w-full" required />
           </fieldset>
 
-          {/* Categories (checkboxes) */}
           <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border p-4">
             <label className="label mb-2">Categories</label>
             <div className="flex flex-wrap gap-3">
@@ -109,7 +107,7 @@ const AddRecipe = () => {
           </fieldset>
         </div>
 
-        {/* Photo URL */}
+        
         <fieldset className="fieldset bg-base-300 border-base-300 rounded-box border my-6 p-4">
           <label className="label">Photo URL</label>
           <input name="photo" type="text" className="input w-full" required />
