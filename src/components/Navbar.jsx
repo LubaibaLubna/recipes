@@ -6,6 +6,7 @@ const Navbar = () => {
     const { user, logOut } = useContext(AuthContext);
     const navigate = useNavigate();
     const [isDark, setIsDark] = useState(false);
+    const [isSticky, setIsSticky] = useState(false);
 
     const handleSignOut = () => {
         logOut()
@@ -25,8 +26,20 @@ const Navbar = () => {
         document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
     }, [isDark]);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 0) {
+                setIsSticky(true);
+            } else {
+                setIsSticky(false);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <div className="navbar bg-base-100 shadow-sm px-10">
+        <div className={`navbar bg-base-100 shadow-sm px-10 transition-all z-50 ${isSticky ? "fixed top-0 left-0 shadow-lg" : "relative"}`}>
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -40,12 +53,15 @@ const Navbar = () => {
                     >
                         <li><NavLink to="/" className={navLinkStyle}>Home</NavLink></li>
                         <li><NavLink to="/allRecipes" className={navLinkStyle}>All Recipes</NavLink></li>
-                        <li><NavLink to="/addRecipe" className={navLinkStyle}>Add Recipe</NavLink></li>
-                        <li><NavLink to="/myRecipes" className={navLinkStyle}>My Recipes</NavLink></li>
+                        {user && (
+                            <>
+                                <li><NavLink to="/addRecipe" className={navLinkStyle}>Add Recipe</NavLink></li>
+                                <li><NavLink to="/myRecipes" className={navLinkStyle}>My Recipes</NavLink></li>
+                            </>
+                        )}
                     </ul>
                 </div>
                 <div className="flex items-center">
-                
                     <span className="font-bold text-3xl ml-2 text-green-700">Recipe book</span>
                 </div>
             </div>
@@ -54,14 +70,17 @@ const Navbar = () => {
                 <ul className="menu menu-horizontal px-1">
                     <li><NavLink to="/" className={navLinkStyle}>Home</NavLink></li>
                     <li><NavLink to="/allRecipes" className={navLinkStyle}>All Recipes</NavLink></li>
-                    <li><NavLink to="/addRecipe" className={navLinkStyle}>Add Recipe</NavLink></li>
-                    <li><NavLink to="/myRecipes" className={navLinkStyle}>My Recipes</NavLink></li>
+                    {user && (
+                        <>
+                            <li><NavLink to="/addRecipe" className={navLinkStyle}>Add Recipe</NavLink></li>
+                            <li><NavLink to="/myRecipes" className={navLinkStyle}>My Recipes</NavLink></li>
+                        </>
+                    )}
                     <li><NavLink to="/contactUs" className={navLinkStyle}>Contact Us</NavLink></li>
                 </ul>
             </div>
 
             <div className="navbar-end gap-5 items-center">
-                {/* 🌗 Theme Toggle */}
                 <input
                     type="checkbox"
                     className="toggle toggle-secondary"

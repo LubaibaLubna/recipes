@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Fade } from 'react-awesome-reveal'; 
+import { Fade } from 'react-awesome-reveal';
 
 const AllRecipes = () => {
     const [recipes, setRecipes] = useState([]);
@@ -59,7 +59,7 @@ const AllRecipes = () => {
                 </select>
             </div>
 
-        
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {filteredRecipes.map((recipe, index) => (
                     <Fade key={recipe._id} triggerOnce delay={index * 50}>
@@ -69,16 +69,18 @@ const AllRecipes = () => {
                                 alt={recipe.name}
                                 className="w-full h-48 object-cover"
                             />
-                            <div className="p-4 flex-grow">
-                                <h2 className="text-xl font-semibold mb-2">{recipe.name}</h2>
-                                <p className="text-sm mb-3 line-clamp-3">{recipe.instructions}</p>
-                            </div>
-                            <div className="p-4 text-center">
-                                <Link to={`/recipes/${recipe._id}`}>
-                                    <button className="btn bg-green-800 text-white w-full">
-                                        See Details
-                                    </button>
-                                </Link>
+                            <div className='h-52'>
+                                <div className="p-4 flex-grow h-38">
+                                    <h2 className="text-xl font-semibold mb-2">{recipe.name}</h2>
+                                    <p className="text-sm line-clamp-4">{recipe.instructions}</p>
+                                </div>
+                                <div className="p-2 text-center">
+                                    <Link to={`/recipes/${recipe._id}`}>
+                                        <button className="btn bg-green-800 text-white w-full">
+                                            See Details
+                                        </button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </Fade>
