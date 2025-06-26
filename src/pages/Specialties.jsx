@@ -54,7 +54,7 @@ export default function Specialties() {
       <p className="text-base max-w-md">{content[activeTab].text}</p>
     </div>
 
-
+ <h1>gsklsl</h1>
   </div>
 </section>
 
